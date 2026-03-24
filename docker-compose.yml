@@ -1,0 +1,12 @@
+services:
+  postgres:
+    image: postgres:18.3
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-release_tracker}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-release_tracker}
+      POSTGRES_DB: ${POSTGRES_DB:-release_tracker_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
