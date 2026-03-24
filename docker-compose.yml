@@ -9,4 +9,15 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./postgres-data:/var/lib/postgresql/data
+      - ./postgres-data:/var/lib/postgresql
+
+  app:
+    build: .
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-release_tracker_db}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-release_tracker}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-release_tracker}
+    ports:
+      - "8080:8080"

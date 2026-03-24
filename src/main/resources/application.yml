@@ -1,3 +1,13 @@
 spring:
   application:
     name: release-tracker
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/release_tracker_db}
+    username: ${SPRING_DATASOURCE_USERNAME:release_tracker}
+    password: ${SPRING_DATASOURCE_PASSWORD:release_tracker}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+  flyway:
+    baseline-on-migrate: true
