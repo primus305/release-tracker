@@ -74,7 +74,11 @@ class ReleaseServiceTest {
 
         ReleaseResponse actualResponse = releaseService.update(id, updateRequest);
 
-        assertThat(actualResponse).isEqualTo(expectedResponse);
+        assertThat(actualResponse)
+                .isNotNull()
+                .usingRecursiveComparison()
+                .isEqualTo(expectedResponse);
+
         verify(releaseMapper,  times(1)).updateEntity(updateRequest, existingRelease);
         verify(releaseMapper, times(1)).toResponse(existingRelease);
         verifyNoMoreInteractions(releaseRepository, releaseMapper);

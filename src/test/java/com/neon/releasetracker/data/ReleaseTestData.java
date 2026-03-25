@@ -38,6 +38,7 @@ public final class ReleaseTestData {
         return UpdateReleaseRequest.builder()
                 .name("Test Release update")
                 .description("Test Release description update")
+                .status(ReleaseStatus.IN_DEVELOPMENT)
                 .releaseDate(LocalDate.now().plusMonths(3))
                 .build();
     }
