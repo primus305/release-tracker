@@ -39,11 +39,11 @@ public class Release extends Auditable {
     @Setter
     private LocalDate releaseDate;
 
-    public Release(String name, String description, ReleaseStatus status, LocalDate releaseDate) {
+    public Release(String name, String description, LocalDate releaseDate) {
         this.name = name;
         this.description = description;
-        this.status = status;
         this.releaseDate = releaseDate;
+        this.status = ReleaseStatus.CREATED;
     }
 
     @Override

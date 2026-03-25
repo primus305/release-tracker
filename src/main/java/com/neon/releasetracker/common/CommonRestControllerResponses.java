@@ -1,6 +1,10 @@
 package com.neon.releasetracker.common;
 
+import com.neon.releasetracker.response.ErrorResponse;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import org.springframework.http.MediaType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -11,7 +15,37 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Inherited
-@ApiResponse(responseCode = "401", description = "Unauthorized")
-@ApiResponse(responseCode = "403", description = "Forbidden")
-@ApiResponse(responseCode = "500", description = "Internal server error")
-public @interface CommonRestControllerResponses {}
+@ApiResponse(
+        responseCode = "400",
+        description = "Invalid input",
+        content = {
+                @Content(
+                        mediaType = MediaType.APPLICATION_JSON_VALUE,
+                        schema = @Schema(implementation = ErrorResponse.class))
+        })
+@ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized",
+        content = {
+                @Content(
+                        mediaType = MediaType.APPLICATION_JSON_VALUE,
+                        schema = @Schema(implementation = ErrorResponse.class))
+        })
+@ApiResponse(
+        responseCode = "403",
+        description = "Forbidden",
+        content = {
+                @Content(
+                        mediaType = MediaType.APPLICATION_JSON_VALUE,
+                        schema = @Schema(implementation = ErrorResponse.class))
+        })
+@ApiResponse(
+        responseCode = "500",
+        description = "Internal server error",
+        content = {
+                @Content(
+                        mediaType = MediaType.APPLICATION_JSON_VALUE,
+                        schema = @Schema(implementation = ErrorResponse.class))
+        })
+public @interface CommonRestControllerResponses {
+}

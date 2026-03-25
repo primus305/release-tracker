@@ -1,16 +1,20 @@
 package com.neon.releasetracker.controller;
 
 import com.neon.releasetracker.common.CommonRestControllerResponses;
-import com.neon.releasetracker.request.ReleaseRequest;
+import com.neon.releasetracker.request.CreateReleaseRequest;
+import com.neon.releasetracker.request.UpdateReleaseRequest;
+import com.neon.releasetracker.response.ErrorResponse;
 import com.neon.releasetracker.response.ReleaseResponse;
 import com.neon.releasetracker.service.ReleaseService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -29,65 +34,57 @@ public class ReleaseController {
     private final ReleaseService releaseService;
 
     @Operation(summary = "Create a new release.")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(responseCode = "201", description = "Release created"),
-                    @ApiResponse(responseCode = "400", description = "Invalid input"),
-                    @ApiResponse(responseCode = "409", description = "Conflict")
-            })
+    @ApiResponse(responseCode = "201", description = "Release created")
     @PostMapping
-    ResponseEntity<ReleaseResponse> create(@RequestBody @Valid ReleaseRequest request) {
-        ReleaseResponse response = releaseService.create(request);
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(response);
+    @ResponseStatus(HttpStatus.CREATED)
+    ReleaseResponse create(@RequestBody @Valid CreateReleaseRequest request) {
+        return releaseService.create(request);
     }
 
     @Operation(summary = "Update the release.")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(responseCode = "200", description = "Release updated"),
-                    @ApiResponse(responseCode = "400", description = "Invalid input"),
-                    @ApiResponse(responseCode = "409", description = "Conflict")
+    @ApiResponse(responseCode = "200", description = "Release updated")
+    @ApiResponse(
+            responseCode = "404",
+            description = "Not found",
+            content = {
+                    @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class))
             })
     @PutMapping(value = "/{id}")
-    ResponseEntity<ReleaseResponse> update(@PathVariable Long id,
-                                           @RequestBody @Valid ReleaseRequest request) {
-        ReleaseResponse response = releaseService.update(id, request);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(response);
+    ReleaseResponse update(@PathVariable @Positive Long id,
+                           @RequestBody @Valid UpdateReleaseRequest request) {
+        return releaseService.update(id, request);
     }
 
     @Operation(summary = "Get release by id.")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(responseCode = "200", description = "Release"),
-                    @ApiResponse(responseCode = "400", description = "Invalid input"),
+    @ApiResponse(responseCode = "200", description = "Release retrieved")
+    @ApiResponse(
+            responseCode = "404",
+            description = "Not found",
+            content = {
+                    @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class))
             })
     @GetMapping(value = "/{id}")
-    ResponseEntity<ReleaseResponse> getById(@PathVariable Long id) {
-        ReleaseResponse response = releaseService.getById(id);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(response);
+    ReleaseResponse getById(@PathVariable @Positive Long id) {
+        return releaseService.getById(id);
     }
 
     @Operation(summary = "Delete release by id.")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(responseCode = "204", description = "Release deleted"),
-                    @ApiResponse(responseCode = "400", description = "Invalid input"),
+    @ApiResponse(responseCode = "204", description = "Release deleted")
+    @ApiResponse(
+            responseCode = "404",
+            description = "Not found",
+            content = {
+                    @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class))
             })
     @DeleteMapping(value = "/{id}")
-    ResponseEntity<Void> deleteById(@PathVariable Long id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void deleteById(@PathVariable @Positive Long id) {
         releaseService.deleteById(id);
-
-        return ResponseEntity
-                .noContent()
-                .build();
     }
 }
