@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
@@ -22,16 +23,20 @@ public class Release extends Auditable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     @Column(nullable = false)
     private String name;
 
+    @Setter
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Setter
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private ReleaseStatus status;
 
+    @Setter
     private LocalDate releaseDate;
 
     public Release(String name, String description, ReleaseStatus status, LocalDate releaseDate) {
