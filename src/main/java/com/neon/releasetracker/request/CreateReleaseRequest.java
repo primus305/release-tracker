@@ -6,7 +6,7 @@ import lombok.Builder;
 import java.time.LocalDate;
 
 @Builder
-public record CreateReleaseRequest(@NotBlank(message = "Release name is required.")
+public record CreateReleaseRequest(@NotBlank(message = "{release.name.required}")
                                    String name,
                                    String description,
                                    LocalDate releaseDate) {

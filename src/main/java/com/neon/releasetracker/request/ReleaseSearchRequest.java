@@ -14,7 +14,7 @@ public record ReleaseSearchRequest(String name,
                                    LocalDate releaseDateFrom,
                                    LocalDate releaseDateTo) {
 
-    @AssertTrue(message = "Release date from must be before release date to")
+    @AssertTrue(message = "{release.date.range.invalid}")
     public boolean isValidDateRange() {
         if (releaseDateFrom == null || releaseDateTo == null) {
             return true;

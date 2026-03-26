@@ -8,10 +8,10 @@ import lombok.Builder;
 import java.time.LocalDate;
 
 @Builder
-public record UpdateReleaseRequest(@NotBlank(message = "Release name is required.")
+public record UpdateReleaseRequest(@NotBlank(message = "{release.name.required}")
                                    String name,
                                    String description,
-                                   @NotNull(message = "Release status is required.")
+                                   @NotNull(message = "{release.status.required}")
                                    ReleaseStatus status,
                                    LocalDate releaseDate) {
 }
