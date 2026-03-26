@@ -27,7 +27,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 @ExtendWith(MockitoExtension.class)
-class ReleaseServiceTest {
+class ReleaseServiceUnitTest {
 
     @Mock
     private ReleaseRepository releaseRepository;
