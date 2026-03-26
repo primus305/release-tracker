@@ -5,12 +5,19 @@ import com.neon.releasetracker.model.Release;
 import com.neon.releasetracker.request.CreateReleaseRequest;
 import com.neon.releasetracker.mapper.ReleaseMapper;
 import com.neon.releasetracker.repository.ReleaseRepository;
+import com.neon.releasetracker.request.ReleaseSearchRequest;
 import com.neon.releasetracker.request.UpdateReleaseRequest;
 import com.neon.releasetracker.response.ReleaseResponse;
+import com.neon.releasetracker.response.SearchResponse;
+import com.neon.releasetracker.specification.ReleaseSpecification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -59,6 +66,22 @@ public class ReleaseService {
         releaseRepository.delete(release);
 
         log.info("Release deleted with id={}", id);
+    }
+
+    public SearchResponse<ReleaseResponse> search(ReleaseSearchRequest request, Pageable pageable) {
+        Page<Release> page = releaseRepository.findAll(ReleaseSpecification.build(request), pageable);
+
+        List<ReleaseResponse> releases = page
+                .stream()
+                .map(releaseMapper::toResponse)
+                .toList();
+
+        return SearchResponse.<ReleaseResponse>builder()
+                .content(releases)
+                .page(page.getNumber())
+                .size(page.getSize())
+                .totalElements(page.getTotalElements())
+                .build();
     }
 
     private Release getReleaseOrThrow(Long id) {

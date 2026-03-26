@@ -2,9 +2,11 @@ package com.neon.releasetracker.controller;
 
 import com.neon.releasetracker.common.CommonRestControllerResponses;
 import com.neon.releasetracker.request.CreateReleaseRequest;
+import com.neon.releasetracker.request.ReleaseSearchRequest;
 import com.neon.releasetracker.request.UpdateReleaseRequest;
 import com.neon.releasetracker.response.ErrorResponse;
 import com.neon.releasetracker.response.ReleaseResponse;
+import com.neon.releasetracker.response.SearchResponse;
 import com.neon.releasetracker.service.ReleaseService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -13,6 +15,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -86,5 +90,13 @@ public class ReleaseController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void deleteById(@PathVariable @Positive Long id) {
         releaseService.deleteById(id);
+    }
+
+    @Operation(summary = "Search releases with filters and pagination")
+    @ApiResponse(responseCode = "200", description = "Releases retrieved")
+    @GetMapping
+    public SearchResponse<ReleaseResponse> search(@Valid ReleaseSearchRequest request,
+                                                  @ParameterObject Pageable pageable) {
+        return releaseService.search(request, pageable);
     }
 }
