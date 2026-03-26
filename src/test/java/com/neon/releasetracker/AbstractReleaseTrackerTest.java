@@ -9,7 +9,6 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
-@ActiveProfiles("test")
 @Sql(scripts = "classpath:db/clean_db.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class AbstractReleaseTrackerTest {
 

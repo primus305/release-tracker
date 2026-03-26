@@ -8,6 +8,7 @@ import com.neon.releasetracker.exception.ReleaseNotFoundException;
 import com.neon.releasetracker.request.CreateReleaseRequest;
 import com.neon.releasetracker.request.UpdateReleaseRequest;
 import com.neon.releasetracker.response.ReleaseResponse;
+import com.neon.releasetracker.response.SearchResponse;
 import com.neon.releasetracker.service.ReleaseService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -49,8 +52,8 @@ class ReleaseControllerUnitTest {
 
     @Test
     void givenValidRequest_whenCreate_thenReturn201() throws Exception {
-        CreateReleaseRequest request = ReleaseTestData.createReleaseRequest();
-        ReleaseResponse expectedResponse = ReleaseTestData.createReleaseResponse();
+        CreateReleaseRequest request = ReleaseTestData.createReleaseRequest().build();
+        ReleaseResponse expectedResponse = ReleaseTestData.releaseResponse();
 
         given(releaseService.create(any())).willReturn(expectedResponse);
 
@@ -77,8 +80,8 @@ class ReleaseControllerUnitTest {
     @Test
     void givenValidRequest_whenUpdate_thenReturn200() throws Exception {
         Long id = 1L;
-        UpdateReleaseRequest request = ReleaseTestData.updateReleaseRequest();
-        ReleaseResponse response = ReleaseTestData.createReleaseResponse();
+        UpdateReleaseRequest request = ReleaseTestData.updateReleaseRequest().build();
+        ReleaseResponse response = ReleaseTestData.releaseResponse();
 
         given(releaseService.update(eq(id), any())).willReturn(response);
 
@@ -105,7 +108,7 @@ class ReleaseControllerUnitTest {
     @Test
     void givenNonExistingId_whenUpdate_thenReturn404() throws Exception {
         Long id = 1L;
-        UpdateReleaseRequest request = ReleaseTestData.updateReleaseRequest();
+        UpdateReleaseRequest request = ReleaseTestData.updateReleaseRequest().build();
 
         given(releaseService.update(eq(id), any()))
                 .willThrow(new ReleaseNotFoundException(id));
@@ -120,7 +123,7 @@ class ReleaseControllerUnitTest {
     @Test
     void givenValidId_whenGetById_thenReturn200() throws Exception {
         Long id = 1L;
-        ReleaseResponse response = ReleaseTestData.createReleaseResponse();
+        ReleaseResponse response = ReleaseTestData.releaseResponse();
 
         given(releaseService.getById(id)).willReturn(response);
 
@@ -169,5 +172,41 @@ class ReleaseControllerUnitTest {
         mockMvc.perform(delete("/releases/{id}", id))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").exists());
+    }
+
+    @Test
+    void givenValidSearchParams_whenSearch_thenReturn200() throws Exception {
+        ReleaseResponse releaseResponse = ReleaseTestData.releaseResponse();
+        SearchResponse<ReleaseResponse> searchResponse = SearchResponse.<ReleaseResponse>builder()
+                .content(List.of(releaseResponse))
+                .page(0)
+                .size(10)
+                .totalElements(1)
+                .build();
+
+        given(releaseService.search(any(), any())).willReturn(searchResponse);
+
+        mockMvc.perform(get("/releases")
+                        .param("name", "test")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content[0].id").value(releaseResponse.id()))
+                .andExpect(jsonPath("$.page").value(0))
+                .andExpect(jsonPath("$.size").value(10))
+                .andExpect(jsonPath("$.totalElements").value(1));
+    }
+
+    @Test
+    void givenInvalidDateRange_whenSearch_thenReturn400() throws Exception {
+        mockMvc.perform(get("/releases")
+                        .param("releaseDateFrom", "2026-12-01")
+                        .param("releaseDateTo", "2026-01-01")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(releaseService);
     }
 }

@@ -3,6 +3,7 @@ package com.neon.releasetracker.data;
 import com.neon.releasetracker.model.Release;
 import com.neon.releasetracker.model.ReleaseStatus;
 import com.neon.releasetracker.request.CreateReleaseRequest;
+import com.neon.releasetracker.request.ReleaseSearchRequest;
 import com.neon.releasetracker.request.UpdateReleaseRequest;
 import com.neon.releasetracker.response.ReleaseResponse;
 
@@ -12,34 +13,37 @@ public final class ReleaseTestData {
 
     private ReleaseTestData() {}
 
-    public static CreateReleaseRequest createReleaseRequest() {
+    public static CreateReleaseRequest.CreateReleaseRequestBuilder createReleaseRequest() {
         return CreateReleaseRequest.builder()
                 .name("Test Release")
                 .description("Test Release description")
-                .releaseDate(LocalDate.now().plusMonths(1))
-                .build();
+                .releaseDate(LocalDate.of(2026, 2, 25));
     }
 
-    public static Release createRelease() {
-        return new Release("Test Release", "Test Release description", LocalDate.now().plusMonths(1));
+    public static Release release() {
+        return new Release("Test Release", "Test Release description", LocalDate.of(2026, 2, 25));
     }
 
-    public static ReleaseResponse createReleaseResponse() {
+    public static ReleaseResponse releaseResponse() {
         return ReleaseResponse.builder()
                 .id(1L)
                 .name("Test Release")
                 .description("Test Release description")
                 .status(ReleaseStatus.CREATED)
-                .releaseDate(LocalDate.now().plusMonths(1))
+                .releaseDate(LocalDate.of(2026, 2, 25))
                 .build();
     }
 
-    public static UpdateReleaseRequest updateReleaseRequest() {
+    public static UpdateReleaseRequest.UpdateReleaseRequestBuilder updateReleaseRequest() {
         return UpdateReleaseRequest.builder()
                 .name("Test Release update")
                 .description("Test Release description update")
                 .status(ReleaseStatus.IN_DEVELOPMENT)
-                .releaseDate(LocalDate.now().plusMonths(3))
-                .build();
+                .releaseDate(LocalDate.of(2026, 4, 25));
+    }
+
+    public static ReleaseSearchRequest.ReleaseSearchRequestBuilder releaseSearchRequest() {
+        return ReleaseSearchRequest.builder()
+                .name("test");
     }
 }
