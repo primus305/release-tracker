@@ -44,7 +44,7 @@ class ReleaseControllerIntegrationTest extends AbstractReleaseTrackerTest {
     void givenValidRequest_whenCreate_thenPersistAndReturn201() throws Exception {
         CreateReleaseRequest request = ReleaseTestData.createReleaseRequest().build();
 
-        mockMvc.perform(post("/releases")
+        mockMvc.perform(post("/v1/releases")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -59,7 +59,7 @@ class ReleaseControllerIntegrationTest extends AbstractReleaseTrackerTest {
         CreateReleaseRequest invalidRequest = CreateReleaseRequest.builder()
                 .build();
 
-        mockMvc.perform(post("/releases")
+        mockMvc.perform(post("/v1/releases")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andExpect(status().isBadRequest());
@@ -71,7 +71,7 @@ class ReleaseControllerIntegrationTest extends AbstractReleaseTrackerTest {
 
         UpdateReleaseRequest updateRequest = ReleaseTestData.updateReleaseRequest().build();
 
-        mockMvc.perform(put("/releases/{id}", releaseResponse.id())
+        mockMvc.perform(put("/v1/releases/{id}", releaseResponse.id())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateRequest)))
                 .andExpect(status().isOk())
@@ -86,7 +86,7 @@ class ReleaseControllerIntegrationTest extends AbstractReleaseTrackerTest {
         Long id = 1L;
         UpdateReleaseRequest request = ReleaseTestData.updateReleaseRequest().build();
 
-        mockMvc.perform(put("/releases/{id}", id)
+        mockMvc.perform(put("/v1/releases/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isNotFound())
@@ -97,7 +97,7 @@ class ReleaseControllerIntegrationTest extends AbstractReleaseTrackerTest {
     void givenExistingId_whenGetById_thenReturn200() throws Exception {
         ReleaseResponse releaseResponse = createRelease("Test Release");
 
-        mockMvc.perform(get("/releases/{id}", releaseResponse.id()))
+        mockMvc.perform(get("/v1/releases/{id}", releaseResponse.id()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(releaseResponse.id()))
                 .andExpect(jsonPath("$.name").value(releaseResponse.name()))
@@ -107,7 +107,7 @@ class ReleaseControllerIntegrationTest extends AbstractReleaseTrackerTest {
 
     @Test
     void givenNonExistingId_whenGetById_thenReturn404() throws Exception {
-        mockMvc.perform(get("/releases/{id}", 999))
+        mockMvc.perform(get("/v1/releases/{id}", 999))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").exists());
     }
@@ -116,10 +116,10 @@ class ReleaseControllerIntegrationTest extends AbstractReleaseTrackerTest {
     void givenExistingId_whenDeleteById_thenReturn204() throws Exception {
         ReleaseResponse releaseResponse = createRelease("Test Release");
 
-        mockMvc.perform(delete("/releases/{id}", releaseResponse.id()))
+        mockMvc.perform(delete("/v1/releases/{id}", releaseResponse.id()))
                 .andExpect(status().isNoContent());
 
-        mockMvc.perform(get("/releases/{id}", releaseResponse.id()))
+        mockMvc.perform(get("/v1/releases/{id}", releaseResponse.id()))
                 .andExpect(status().isNotFound());
     }
 
@@ -127,7 +127,7 @@ class ReleaseControllerIntegrationTest extends AbstractReleaseTrackerTest {
     void givenNonExistingId_whenDeleteById_thenReturn404() throws Exception {
         Long id = 1L;
 
-        mockMvc.perform(delete("/releases/{id}", id))
+        mockMvc.perform(delete("/v1/releases/{id}", id))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").exists());
     }
@@ -136,7 +136,7 @@ class ReleaseControllerIntegrationTest extends AbstractReleaseTrackerTest {
     void givenNameFilter_whenSearch_thenReturnMatching() throws Exception {
         createRelease("Test Release");
 
-        mockMvc.perform(get("/releases")
+        mockMvc.perform(get("/v1/releases")
                         .param("name", "test")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -152,7 +152,7 @@ class ReleaseControllerIntegrationTest extends AbstractReleaseTrackerTest {
 
         createRelease("Test Release 2");
 
-        mockMvc.perform(get("/releases")
+        mockMvc.perform(get("/v1/releases")
                         .param("statuses", "CREATED", "IN_DEVELOPMENT")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -165,7 +165,7 @@ class ReleaseControllerIntegrationTest extends AbstractReleaseTrackerTest {
         createReleaseWithDate("Test Release 1", LocalDate.of(2026, 2, 25));
         createReleaseWithDate("Test Release 2", LocalDate.of(2026, 4, 25));
 
-        mockMvc.perform(get("/releases")
+        mockMvc.perform(get("/v1/releases")
                         .param("releaseDateFrom", "2026-01-25")
                         .param("releaseDateTo", "2026-03-25")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -178,7 +178,7 @@ class ReleaseControllerIntegrationTest extends AbstractReleaseTrackerTest {
 
     @Test
     void givenInvalidDateRange_whenSearch_thenReturn400() throws Exception {
-        mockMvc.perform(get("/releases")
+        mockMvc.perform(get("/v1/releases")
                         .param("releaseDateFrom", "2026-12-01")
                         .param("releaseDateTo", "2026-01-01")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -190,7 +190,7 @@ class ReleaseControllerIntegrationTest extends AbstractReleaseTrackerTest {
                 .name(name)
                 .build();
 
-        String json = mockMvc.perform(post("/releases")
+        String json = mockMvc.perform(post("/v1/releases")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createReleaseRequest)))
                 .andReturn()
@@ -206,7 +206,7 @@ class ReleaseControllerIntegrationTest extends AbstractReleaseTrackerTest {
                 .releaseDate(date)
                 .build();
 
-        mockMvc.perform(post("/releases")
+        mockMvc.perform(post("/v1/releases")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
     }
@@ -215,7 +215,7 @@ class ReleaseControllerIntegrationTest extends AbstractReleaseTrackerTest {
         UpdateReleaseRequest updateRequest = ReleaseTestData.updateReleaseRequest()
                 .build();
 
-        mockMvc.perform(put("/releases/{id}", id)
+        mockMvc.perform(put("/v1/releases/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateRequest)));
     }

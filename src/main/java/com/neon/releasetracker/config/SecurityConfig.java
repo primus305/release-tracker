@@ -31,7 +31,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private static final String[] PERMITTED_URLS =
-            new String[] {"/v3/api-docs/**", "/swagger-ui/**", "/actuator/**", "/auth/**"};
+            new String[] {"/v3/api-docs/**", "/swagger-ui/**", "/actuator/**", "/v1/auth/**"};
     private static final String DEFAULT_USER_ROLE = "USER";
 
     private final DelegatedAuthenticationEntryPoint authenticationEntryPoint;

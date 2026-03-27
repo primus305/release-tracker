@@ -65,7 +65,7 @@ class ReleaseControllerUnitTest {
 
         given(releaseService.create(any())).willReturn(expectedResponse);
 
-        mockMvc.perform(post("/releases")
+        mockMvc.perform(post("/v1/releases")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -79,7 +79,7 @@ class ReleaseControllerUnitTest {
         CreateReleaseRequest invalidRequest = CreateReleaseRequest.builder()
                 .build();
 
-        mockMvc.perform(post("/releases")
+        mockMvc.perform(post("/v1/releases")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andExpect(status().isBadRequest());
@@ -93,7 +93,7 @@ class ReleaseControllerUnitTest {
 
         given(releaseService.update(eq(id), any())).willReturn(response);
 
-        mockMvc.perform(put("/releases/{id}", id)
+        mockMvc.perform(put("/v1/releases/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -107,7 +107,7 @@ class ReleaseControllerUnitTest {
         UpdateReleaseRequest invalidRequest = UpdateReleaseRequest.builder()
                 .build();
 
-        mockMvc.perform(put("/releases/{id}", id)
+        mockMvc.perform(put("/v1/releases/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andExpect(status().isBadRequest());
@@ -121,7 +121,7 @@ class ReleaseControllerUnitTest {
         given(releaseService.update(eq(id), any()))
                 .willThrow(new ReleaseNotFoundException(id));
 
-        mockMvc.perform(put("/releases/{id}", id)
+        mockMvc.perform(put("/v1/releases/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isNotFound())
@@ -135,7 +135,7 @@ class ReleaseControllerUnitTest {
 
         given(releaseService.getById(id)).willReturn(response);
 
-        mockMvc.perform(get("/releases/{id}", id))
+        mockMvc.perform(get("/v1/releases/{id}", id))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(id))
                 .andExpect(jsonPath("$.name").value(response.name()));
@@ -143,7 +143,7 @@ class ReleaseControllerUnitTest {
 
     @Test
     void givenInvalidId_whenGetById_thenReturn400() throws Exception {
-        mockMvc.perform(get("/releases/-1"))
+        mockMvc.perform(get("/v1/releases/-1"))
                 .andExpect(status().isBadRequest());
 
         verifyNoInteractions(releaseService);
@@ -156,7 +156,7 @@ class ReleaseControllerUnitTest {
         given(releaseService.getById(id))
                 .willThrow(new ReleaseNotFoundException(id));
 
-        mockMvc.perform(get("/releases/{id}", id))
+        mockMvc.perform(get("/v1/releases/{id}", id))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.message").exists());
@@ -164,7 +164,7 @@ class ReleaseControllerUnitTest {
 
     @Test
     void givenExistingId_whenDelete_thenReturn204() throws Exception {
-        mockMvc.perform(delete("/releases/{id}", 1L))
+        mockMvc.perform(delete("/v1/releases/{id}", 1L))
                 .andExpect(status().isNoContent());
 
         verify(releaseService).deleteById(1L);
@@ -177,7 +177,7 @@ class ReleaseControllerUnitTest {
         willThrow(new ReleaseNotFoundException(id))
                 .given(releaseService).deleteById(id);
 
-        mockMvc.perform(delete("/releases/{id}", id))
+        mockMvc.perform(delete("/v1/releases/{id}", id))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").exists());
     }
@@ -194,7 +194,7 @@ class ReleaseControllerUnitTest {
 
         given(releaseService.search(any(), any())).willReturn(searchResponse);
 
-        mockMvc.perform(get("/releases")
+        mockMvc.perform(get("/v1/releases")
                         .param("name", "test")
                         .param("page", "0")
                         .param("size", "10")
@@ -209,7 +209,7 @@ class ReleaseControllerUnitTest {
 
     @Test
     void givenInvalidDateRange_whenSearch_thenReturn400() throws Exception {
-        mockMvc.perform(get("/releases")
+        mockMvc.perform(get("/v1/releases")
                         .param("releaseDateFrom", "2026-12-01")
                         .param("releaseDateTo", "2026-01-01")
                         .contentType(MediaType.APPLICATION_JSON))
