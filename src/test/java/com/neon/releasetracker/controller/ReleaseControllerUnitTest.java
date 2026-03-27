@@ -2,19 +2,21 @@ package com.neon.releasetracker.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.neon.releasetracker.config.TestConfig;
+import com.neon.releasetracker.config.TestJacksonConfig;
 import com.neon.releasetracker.data.ReleaseTestData;
 import com.neon.releasetracker.exception.ReleaseNotFoundException;
 import com.neon.releasetracker.request.CreateReleaseRequest;
 import com.neon.releasetracker.request.UpdateReleaseRequest;
 import com.neon.releasetracker.response.ReleaseResponse;
 import com.neon.releasetracker.response.SearchResponse;
+import com.neon.releasetracker.security.JwtService;
 import com.neon.releasetracker.service.ReleaseService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -35,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ReleaseController.class)
-@Import(TestConfig.class)
+@Import(TestJacksonConfig.class)
 @TestPropertySource(properties = {
         "spring.messages.basename=messages/messages"
 })
@@ -46,6 +48,12 @@ class ReleaseControllerUnitTest {
 
     @MockitoBean
     private ReleaseService releaseService;
+
+    @MockitoBean
+    private JwtService jwtService;
+
+    @MockitoBean
+    private UserDetailsService userDetailsService;
 
     @Autowired
     private ObjectMapper objectMapper;

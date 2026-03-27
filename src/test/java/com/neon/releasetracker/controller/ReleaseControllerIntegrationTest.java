@@ -2,7 +2,8 @@ package com.neon.releasetracker.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.neon.releasetracker.AbstractReleaseTrackerTest;
-import com.neon.releasetracker.config.TestConfig;
+import com.neon.releasetracker.config.TestSecurityConfig;
+import com.neon.releasetracker.config.TestJacksonConfig;
 import com.neon.releasetracker.data.ReleaseTestData;
 import com.neon.releasetracker.model.ReleaseStatus;
 import com.neon.releasetracker.request.CreateReleaseRequest;
@@ -27,8 +28,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-@AutoConfigureMockMvc
-@Import(TestConfig.class)
+@AutoConfigureMockMvc(addFilters = false)
+@Import({TestJacksonConfig.class,  TestSecurityConfig.class})
 @TestPropertySource(properties = {
         "spring.messages.basename=messages/messages"
 })

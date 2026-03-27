@@ -11,3 +11,10 @@ spring:
       ddl-auto: none
   flyway:
     baseline-on-migrate: true
+
+release-tracker:
+  security:
+    enabled: ${APP_SECURITY_ENABLED:true}
+    user:
+      username: ${APP_SECURITY_USER_USERNAME:user}
+      password: ${APP_SECURITY_USER_PASSWORD:user123}
