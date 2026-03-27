@@ -2,7 +2,7 @@ package com.neon.releasetracker.controller;
 
 import com.neon.releasetracker.request.AuthRequest;
 import com.neon.releasetracker.response.AuthResponse;
-import com.neon.releasetracker.security.JwtService;
+import com.neon.releasetracker.security.JwtTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,14 +19,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
-    private final JwtService jwtService;
+    private final JwtTokenService jwtTokenService;
 
     @PostMapping("/login")
     public AuthResponse login(@RequestBody AuthRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.username(), request.password())
         );
-        String token = jwtService.generateToken(request.username());
+        String token = jwtTokenService.generateToken(request.username());
         return AuthResponse.builder().token(token).build();
     }
 }

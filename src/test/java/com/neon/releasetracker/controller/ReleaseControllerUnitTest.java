@@ -9,7 +9,7 @@ import com.neon.releasetracker.request.CreateReleaseRequest;
 import com.neon.releasetracker.request.UpdateReleaseRequest;
 import com.neon.releasetracker.response.ReleaseResponse;
 import com.neon.releasetracker.response.SearchResponse;
-import com.neon.releasetracker.security.JwtService;
+import com.neon.releasetracker.security.JwtTokenService;
 import com.neon.releasetracker.service.ReleaseService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +50,7 @@ class ReleaseControllerUnitTest {
     private ReleaseService releaseService;
 
     @MockitoBean
-    private JwtService jwtService;
+    private JwtTokenService jwtTokenService;
 
     @MockitoBean
     private UserDetailsService userDetailsService;

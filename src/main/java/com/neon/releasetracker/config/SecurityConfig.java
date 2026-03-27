@@ -1,5 +1,7 @@
 package com.neon.releasetracker.config;
 
+import com.neon.releasetracker.security.DelegatedAccessDeniedHandler;
+import com.neon.releasetracker.security.DelegatedAuthenticationEntryPoint;
 import com.neon.releasetracker.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -25,13 +27,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "release-tracker.security.enabled", havingValue = "true")
-@EnableConfigurationProperties(SecurityUserProperties.class)
+@EnableConfigurationProperties(SecurityProperties.class)
 public class SecurityConfig {
 
     private static final String[] PERMITTED_URLS =
             new String[] {"/v3/api-docs/**", "/swagger-ui/**", "/actuator/**", "/auth/**"};
-
     private static final String DEFAULT_USER_ROLE = "USER";
+
+    private final DelegatedAuthenticationEntryPoint authenticationEntryPoint;
+    private final DelegatedAccessDeniedHandler accessDeniedHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http,
@@ -42,6 +46,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PERMITTED_URLS).permitAll()
                         .anyRequest().authenticated())
+                .exceptionHandling(exception -> exception
+                        .accessDeniedHandler(accessDeniedHandler)
+                        .authenticationEntryPoint(authenticationEntryPoint))
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
@@ -60,10 +67,10 @@ public class SecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService(PasswordEncoder encoder,
-                                                 SecurityUserProperties securityUserProperties) {
+                                                 SecurityProperties securityProperties) {
         UserDetails user = User.builder()
-                .username(securityUserProperties.username())
-                .password(encoder.encode(securityUserProperties.password()))
+                .username(securityProperties.user().username())
+                .password(encoder.encode(securityProperties.user().password()))
                 .roles(DEFAULT_USER_ROLE)
                 .build();
         return new InMemoryUserDetailsManager(user);

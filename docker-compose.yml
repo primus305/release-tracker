@@ -16,9 +16,10 @@ services:
     depends_on:
       - postgres
     environment:
-      APP_SECURITY_ENABLED: ${SECURITY_ENABLED:-true}
-      APP_SECURITY_USER_USERNAME: ${SECURITY_USER_USERNAME:-user}
-      APP_SECURITY_USER_PASSWORD: ${SECURITY_USER_PASSWORD:-user123}
+      SECURITY_ENABLED: ${SECURITY_ENABLED:-true}
+      SECURITY_USER_USERNAME: ${SECURITY_USER_USERNAME:-user}
+      SECURITY_USER_PASSWORD: ${SECURITY_USER_PASSWORD:-user123}
+      SECURITY_JWT_SECRET: ${SECURITY_JWT_SECRET:-release-tracker-super-super-secret}
 
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-release_tracker_db}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-release_tracker}

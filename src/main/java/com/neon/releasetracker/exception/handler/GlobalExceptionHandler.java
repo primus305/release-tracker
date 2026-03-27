@@ -9,6 +9,9 @@ import org.springframework.context.MessageSource;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.method.ParameterErrors;
 import org.springframework.validation.method.ParameterValidationResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -108,6 +111,28 @@ public class GlobalExceptionHandler {
 
         return buildErrorResponse(INTERNAL_SERVER_ERROR, message);
     }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException ex,
+                                                                       Locale locale) {
+        log.warn("Authentication exception caught", ex);
+
+        String message = messageSource.getMessage("error.authentication",
+                new Object[]{}, locale);
+
+        return buildErrorResponse(HttpStatus.UNAUTHORIZED, message);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex, Locale locale) {
+        log.warn("Access denied exception caught", ex);
+
+        String message = messageSource.getMessage("error.access.denied",
+                new Object[]{}, locale);
+
+        return buildErrorResponse(HttpStatus.FORBIDDEN, message);
+    }
+
 
     private String resolveMessage(String key, Object[] args, Locale locale) {
         return messageSource.getMessage(key, args, locale);

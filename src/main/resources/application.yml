@@ -14,7 +14,8 @@ spring:
 
 release-tracker:
   security:
-    enabled: ${APP_SECURITY_ENABLED:true}
+    enabled: ${SECURITY_ENABLED:true}
     user:
-      username: ${APP_SECURITY_USER_USERNAME:user}
-      password: ${APP_SECURITY_USER_PASSWORD:user123}
+      username: ${SECURITY_USER_USERNAME:user}
+      password: ${SECURITY_USER_PASSWORD:user123}
+    jwt-secret: ${SECURITY_JWT_SECRET:release-tracker--super-super-secret}
