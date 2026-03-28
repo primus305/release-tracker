@@ -24,5 +24,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-release_tracker_db}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-release_tracker}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-release_tracker}
+    volumes:
+      - ./logs:/app/logs
     ports:
       - "8080:8080"

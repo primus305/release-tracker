@@ -1,6 +1,6 @@
 # 🚀 Release Tracker
 
-This project is a Spring Boot application designed with a focus on clean architecture, containerization, and automated CI/CD workflows.
+This project is a Spring Boot application designed with a focus on clean architecture, containerization, and production-ready best practices such as observability, security, and automated CI/CD workflows.
 
 ---
 
@@ -51,7 +51,7 @@ If you prefer running the application locally using your installed Maven while u
 ---
 
 ## 🗝️ Security Notes
-* By default, the application runs with Spring Security’s in-memory authentication, which is the recommended approach for simple use cases and take-home tasks. User credentials are defined in the .env file for convenience. In a real project, secrets and passwords would typically be stored in a secure secret manager instead of environment files to avoid exposing sensitive data.
+* By default, the application runs with Spring Security’s in-memory authentication. User credentials are defined in the .env file for convenience. In a real project, secrets and passwords would typically be stored in a secure secret manager instead of environment files to avoid exposing sensitive data.
 * You can disable security with `SECURITY_ENABLED=false`.
 
 ---
@@ -159,3 +159,43 @@ SECURITY_JWT_SECRET=release-tracker-super-super-secret
 POSTGRES_USER=release_tracker
 POSTGRES_PASSWORD=release_tracker
 POSTGRES_DB=release_tracker_db
+```
+
+## 📊 Monitoring & Logging
+
+The application includes basic production-ready observability:
+
+### 🔹 Logging
+
+* Structured logging with clear log levels
+* Service-level logging for business operations
+* Centralized exception handling with error logging
+* Request Tracing: Every request is tagged with a unique `X-Trace-ID` (MDC), returned in the response headers.
+
+### 🔹 Actuator Endpoints
+
+The following endpoints are exposed:
+
+* `/api/actuator/health` – application health status
+* `/api/actuator/metrics` – internal metrics
+* `/api/actuator/prometheus` – Prometheus-compatible metrics
+
+These endpoints provide insight into application state and performance.
+
+> **Note:** Metrics are primarily intended for integration with monitoring tools (e.g. Prometheus, Grafana), but can also be accessed directly.
+
+---
+
+## 🔁 CI/CD
+
+The project includes a CI/CD pipeline using GitHub Actions.
+
+### Pipeline steps:
+
+* Checkout source code
+* Setup JDK
+* Run unit and integration tests
+* Build application
+* Build Docker image
+
+This ensures every change is automatically validated.

@@ -3,6 +3,7 @@ target/
 !**/src/test/**/target/
 .env
 postgres-data/
+logs/
 
 ### STS ###
 .apt_generated
