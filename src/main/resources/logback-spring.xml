@@ -4,9 +4,14 @@
     <property name="DATE" value="%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint}" />
     <property name="LEVEL" value="%clr(%5p)" />
     <property name="TRACE" value="%clr([%X{traceId}]){yellow}" />
-
     <property name="CONSOLE_CUSTOM_PATTERN"
               value="${DATE} ${LEVEL} %clr(${PID:- }){magenta} --- [%15.15t] %cyan(%-40.40logger{39}) : ${TRACE} %m%n"/>
+
+    <property name="DATE_PLAIN" value="%d{yyyy-MM-dd HH:mm:ss.SSS}" />
+    <property name="LEVEL_PLAIN" value="%5p" />
+    <property name="TRACE_PLAIN" value="[%X{traceId}]" />
+    <property name="FILE_CUSTOM_PATTERN"
+              value="${DATE_PLAIN} ${LEVEL_PLAIN} ${PID:- } --- [%15.15t] %-40.40logger{39} : ${TRACE_PLAIN} %m%n"/>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
@@ -23,7 +28,7 @@
             <maxHistory>7</maxHistory>
         </rollingPolicy>
         <encoder>
-            <pattern>${FILE_LOG_PATTERN}</pattern>
+            <pattern>${FILE_CUSTOM_PATTERN}</pattern>
             <charset>utf8</charset>
         </encoder>
     </appender>

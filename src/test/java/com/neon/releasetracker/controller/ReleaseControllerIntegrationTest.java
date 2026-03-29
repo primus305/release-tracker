@@ -2,7 +2,6 @@ package com.neon.releasetracker.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.neon.releasetracker.AbstractReleaseTrackerTest;
-import com.neon.releasetracker.config.TestSecurityConfig;
 import com.neon.releasetracker.config.TestJacksonConfig;
 import com.neon.releasetracker.data.ReleaseTestData;
 import com.neon.releasetracker.model.ReleaseStatus;
@@ -19,7 +18,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -28,10 +26,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-@AutoConfigureMockMvc(addFilters = false)
-@Import({TestJacksonConfig.class,  TestSecurityConfig.class})
+@AutoConfigureMockMvc
+@Import(TestJacksonConfig.class)
 @TestPropertySource(properties = {
-        "spring.messages.basename=messages/messages"
+        "spring.messages.basename=messages/messages",
+        "release-tracker.security.enabled=false"
 })
 class ReleaseControllerIntegrationTest extends AbstractReleaseTrackerTest {
     @Autowired

@@ -10,7 +10,6 @@ import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.method.ParameterErrors;
 import org.springframework.validation.method.ParameterValidationResult;
@@ -103,15 +102,6 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(BAD_REQUEST, message);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleAllUnhandledExceptions(Exception ex, Locale locale) {
-        log.error("Unexpected error occurred", ex);
-
-        String message = messageSource.getMessage(ERROR_GENERAL, new Object[]{}, locale);
-
-        return buildErrorResponse(INTERNAL_SERVER_ERROR, message);
-    }
-
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException ex,
                                                                        Locale locale) {
@@ -133,6 +123,14 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.FORBIDDEN, message);
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleAllUnhandledExceptions(Exception ex, Locale locale) {
+        log.error("Unexpected error occurred", ex);
+
+        String message = messageSource.getMessage(ERROR_GENERAL, new Object[]{}, locale);
+
+        return buildErrorResponse(INTERNAL_SERVER_ERROR, message);
+    }
 
     private String resolveMessage(String key, Object[] args, Locale locale) {
         return messageSource.getMessage(key, args, locale);

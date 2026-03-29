@@ -68,6 +68,7 @@ public class ReleaseService {
         log.info("Release deleted with id={}", id);
     }
 
+    @Transactional(readOnly = true)
     public SearchResponse<ReleaseResponse> search(ReleaseSearchRequest request, Pageable pageable) {
         Page<Release> page = releaseRepository.findAll(ReleaseSpecification.build(request), pageable);
 

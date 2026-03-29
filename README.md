@@ -20,16 +20,19 @@ This is the fastest way to run the entire stack (Application + PostgreSQL) witho
 1. **Prepare the environment file:**
    ```bash
    cp .env.example .env
+   ```
 
 *(Note: .env.example contains pre-configured defaults for an immediate "out-of-the-box" experience.)*
 
 2. **Launch the services:**
    ```bash
    docker compose up --build -d
+   ```
 
 3. **Run without security:**
     ```bash
    SECURITY_ENABLED=false docker compose up --build -d
+   ```
 
 **The application will be accessible at:** http://localhost:8080
 
@@ -41,13 +44,15 @@ If you prefer running the application locally using your installed Maven while u
 1. **Start the database only:**
    ```bash
    docker compose up postgres -d
+   ```
 2. **Run the application:**
-      ```bash
+   ```bash
    mvn spring-boot:run
+   ```
 3. **Run without security:**
-    ```bash
+   ```bash
    SECURITY_ENABLED=false mvn spring-boot:run
-
+   ```
 ---
 
 ## 🗝️ Security Notes
@@ -133,17 +138,20 @@ The project includes both **integration** and **unit tests**:
 - **Integration tests** use Spring Boot Test, MockMvc, Testcontainers, and a clean database state for each test.
 - **Unit tests** use Mockito for mocking service layers and verifying interactions.
 
+`ReleaseControllerIntegrationTest` runs with security disabled to focus on API and database behavior; `ReleaseTrackerSecurityIntegrationTest` covers JWT authentication and public routes (for example Swagger) with security enabled.
+
 Example commands to run tests:
 
 - Run all tests locally with Maven:
     ```
     mvn clean verify
-
+    ```
+    
 - Run specific test classes:
     ```
-    mvn test -Dtest=ReleaseControllerIntegrationTest  
+    mvn test -Dtest=ReleaseControllerIntegrationTest
     mvn test -Dtest=ReleaseServiceUnitTest
-
+    ```
 ---
 
 ## 📝 .env.example
