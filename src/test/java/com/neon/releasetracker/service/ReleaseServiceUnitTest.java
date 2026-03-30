@@ -30,7 +30,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -96,7 +95,7 @@ class ReleaseServiceUnitTest {
 
     @Test
     void givenNonExistingId_whenUpdate_thenThrowException() {
-        Long id = 99L;
+        Long id = 1L;
         UpdateReleaseRequest updateRequest = ReleaseTestData.updateReleaseRequest().build();
 
         given(releaseRepository.findById(id)).willReturn(Optional.empty());
@@ -128,7 +127,7 @@ class ReleaseServiceUnitTest {
 
     @Test
     void givenNonExistingId_whenGetById_thenThrowException() {
-        Long id = 99L;
+        Long id = 1L;
         given(releaseRepository.findById(id)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> releaseService.getById(id))
@@ -151,13 +150,14 @@ class ReleaseServiceUnitTest {
 
     @Test
     void givenNonExistingId_whenDelete_thenThrowException() {
-        Long id = 99L;
+        Long id = 1L;
         given(releaseRepository.findById(id)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> releaseService.deleteById(id))
                 .isInstanceOf(ReleaseNotFoundException.class);
 
-        verify(releaseRepository, never()).delete(any(Release.class));
+        verify(releaseRepository, times(1)).findById(id);
+        verifyNoMoreInteractions(releaseRepository);
     }
 
     @Test

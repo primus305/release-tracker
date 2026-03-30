@@ -34,9 +34,11 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @RestControllerAdvice
 @RequiredArgsConstructor
 public class GlobalExceptionHandler {
-    public static final String ERROR_TYPE_MISMATCH_KEY = "error.type.mismatch";
-    public static final String ERROR_VALIDATION_FAILED = "error.validation.failed";
-    public static final String ERROR_GENERAL = "error.general";
+    private static final String ERROR_TYPE_MISMATCH = "error.type.mismatch";
+    private static final String ERROR_VALIDATION_FAILED = "error.validation.failed";
+    private static final String ERROR_AUTHENTICATION = "error.authentication";
+    private static final String ERROR_ACCESS_DENIED = "error.access.denied";
+    private static final String ERROR_GENERAL = "error.general";
 
     private final MessageSource messageSource;
 
@@ -64,7 +66,7 @@ public class GlobalExceptionHandler {
                         .build())
                 .toList();
 
-        String message = resolveMessage(ERROR_VALIDATION_FAILED, new Object[]{}, locale);
+        String message = resolveMessage(ERROR_VALIDATION_FAILED, locale);
 
         return buildValidationErrorResponse(message, errors);
     }
@@ -78,23 +80,25 @@ public class GlobalExceptionHandler {
                 .flatMap(result -> mapToValidationErrors(locale, result))
                 .toList();
 
-        String message = resolveMessage(ERROR_VALIDATION_FAILED, new Object[]{}, locale);
+        String message = resolveMessage(ERROR_VALIDATION_FAILED, locale);
 
         return buildValidationErrorResponse(message, errors);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ErrorResponse> handleTypeMismatchException(MethodArgumentTypeMismatchException ex, Locale locale) {
+    public ResponseEntity<ErrorResponse> handleTypeMismatchException(MethodArgumentTypeMismatchException ex,
+                                                                     Locale locale) {
         log.warn("Validation error occurred", ex);
 
         String type = Optional.ofNullable(ex.getRequiredType())
                 .map(Class::getSimpleName)
                 .orElse("unknown");
 
-        Object value = Optional.ofNullable(ex.getValue()).orElse("unknown");
+        Object value = Optional.ofNullable(ex.getValue())
+                .orElse("unknown");
 
-        String message = messageSource.getMessage(
-                ERROR_TYPE_MISMATCH_KEY,
+        String message = resolveMessage(
+                ERROR_TYPE_MISMATCH,
                 new Object[]{ex.getName(), value, type},
                 locale
         );
@@ -107,18 +111,17 @@ public class GlobalExceptionHandler {
                                                                        Locale locale) {
         log.warn("Authentication exception caught", ex);
 
-        String message = messageSource.getMessage("error.authentication",
-                new Object[]{}, locale);
+        String message = resolveMessage(ERROR_AUTHENTICATION, locale);
 
         return buildErrorResponse(HttpStatus.UNAUTHORIZED, message);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex, Locale locale) {
+    public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex,
+                                                                     Locale locale) {
         log.warn("Access denied exception caught", ex);
 
-        String message = messageSource.getMessage("error.access.denied",
-                new Object[]{}, locale);
+        String message = resolveMessage(ERROR_ACCESS_DENIED, locale);
 
         return buildErrorResponse(HttpStatus.FORBIDDEN, message);
     }
@@ -127,9 +130,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleAllUnhandledExceptions(Exception ex, Locale locale) {
         log.error("Unexpected error occurred", ex);
 
-        String message = messageSource.getMessage(ERROR_GENERAL, new Object[]{}, locale);
+        String message = resolveMessage(ERROR_GENERAL, locale);
 
         return buildErrorResponse(INTERNAL_SERVER_ERROR, message);
+    }
+
+    private String resolveMessage(String key, Locale locale) {
+        return resolveMessage(key, new Object[]{}, locale);
     }
 
     private String resolveMessage(String key, Object[] args, Locale locale) {

@@ -21,14 +21,17 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -63,7 +66,7 @@ class ReleaseControllerUnitTest {
         CreateReleaseRequest request = ReleaseTestData.createReleaseRequest().build();
         ReleaseResponse expectedResponse = ReleaseTestData.releaseResponse();
 
-        given(releaseService.create(any())).willReturn(expectedResponse);
+        given(releaseService.create(request)).willReturn(expectedResponse);
 
         mockMvc.perform(post("/v1/releases")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -72,6 +75,9 @@ class ReleaseControllerUnitTest {
                 .andExpect(jsonPath("$.id").value(expectedResponse.id()))
                 .andExpect(jsonPath("$.name").value(expectedResponse.name()))
                 .andExpect(jsonPath("$.description").value(expectedResponse.description()));
+
+        verify(releaseService, times(1)).create(request);
+        verifyNoMoreInteractions(releaseService);
     }
 
     @Test
@@ -83,6 +89,8 @@ class ReleaseControllerUnitTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(releaseService);
     }
 
     @Test
@@ -91,7 +99,7 @@ class ReleaseControllerUnitTest {
         UpdateReleaseRequest request = ReleaseTestData.updateReleaseRequest().build();
         ReleaseResponse response = ReleaseTestData.releaseResponse();
 
-        given(releaseService.update(eq(id), any())).willReturn(response);
+        given(releaseService.update(eq(id), eq(request))).willReturn(response);
 
         mockMvc.perform(put("/v1/releases/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -99,18 +107,22 @@ class ReleaseControllerUnitTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(id))
                 .andExpect(jsonPath("$.name").value(response.name()));
+
+        verify(releaseService, times(1)).update(id, request);
+        verifyNoMoreInteractions(releaseService);
     }
 
     @Test
     void givenInvalidRequest_whenUpdate_thenReturn400() throws Exception {
-        Long id = 1L;
         UpdateReleaseRequest invalidRequest = UpdateReleaseRequest.builder()
                 .build();
 
-        mockMvc.perform(put("/v1/releases/{id}", id)
+        mockMvc.perform(put("/v1/releases/{id}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(releaseService);
     }
 
     @Test
@@ -118,7 +130,7 @@ class ReleaseControllerUnitTest {
         Long id = 1L;
         UpdateReleaseRequest request = ReleaseTestData.updateReleaseRequest().build();
 
-        given(releaseService.update(eq(id), any()))
+        given(releaseService.update(eq(id), eq(request)))
                 .willThrow(new ReleaseNotFoundException(id));
 
         mockMvc.perform(put("/v1/releases/{id}", id)
@@ -126,6 +138,9 @@ class ReleaseControllerUnitTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").exists());
+
+        verify(releaseService, times(1)).update(id, request);
+        verifyNoMoreInteractions(releaseService);
     }
 
     @Test
@@ -139,6 +154,9 @@ class ReleaseControllerUnitTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(id))
                 .andExpect(jsonPath("$.name").value(response.name()));
+
+        verify(releaseService, times(1)).getById(id);
+        verifyNoMoreInteractions(releaseService);
     }
 
     @Test
@@ -160,6 +178,9 @@ class ReleaseControllerUnitTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.message").exists());
+
+        verify(releaseService, times(1)).getById(id);
+        verifyNoMoreInteractions(releaseService);
     }
 
     @Test
@@ -167,7 +188,8 @@ class ReleaseControllerUnitTest {
         mockMvc.perform(delete("/v1/releases/{id}", 1L))
                 .andExpect(status().isNoContent());
 
-        verify(releaseService).deleteById(1L);
+        verify(releaseService, times(1)).deleteById(1L);
+        verifyNoMoreInteractions(releaseService);
     }
 
     @Test
@@ -180,6 +202,9 @@ class ReleaseControllerUnitTest {
         mockMvc.perform(delete("/v1/releases/{id}", id))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").exists());
+
+        verify(releaseService, times(1)).deleteById(id);
+        verifyNoMoreInteractions(releaseService);
     }
 
     @Test
@@ -210,8 +235,8 @@ class ReleaseControllerUnitTest {
     @Test
     void givenInvalidDateRange_whenSearch_thenReturn400() throws Exception {
         mockMvc.perform(get("/v1/releases")
-                        .param("releaseDateFrom", "2026-12-01")
-                        .param("releaseDateTo", "2026-01-01")
+                        .param("releaseDateFrom", LocalDate.of(2026, 12, 1).toString())
+                        .param("releaseDateTo", LocalDate.of(2026, 1, 1).toString())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
 

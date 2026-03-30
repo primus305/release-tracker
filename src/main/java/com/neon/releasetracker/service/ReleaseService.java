@@ -41,7 +41,7 @@ public class ReleaseService {
     public ReleaseResponse update(Long id, UpdateReleaseRequest request) {
         log.info("Updating release with id={}", id);
 
-        Release release = getReleaseOrThrow(id);
+        Release release = getRelease(id);
 
         releaseMapper.updateEntity(request, release);
 
@@ -62,7 +62,7 @@ public class ReleaseService {
     public void deleteById(Long id) {
         log.info("Deleting release with id={}", id);
 
-        Release release = getReleaseOrThrow(id);
+        Release release = getRelease(id);
         releaseRepository.delete(release);
 
         log.info("Release deleted with id={}", id);
@@ -85,7 +85,7 @@ public class ReleaseService {
                 .build();
     }
 
-    private Release getReleaseOrThrow(Long id) {
+    private Release getRelease(Long id) {
         return releaseRepository.findById(id)
                 .orElseThrow(() -> new ReleaseNotFoundException(id));
     }
