@@ -17,12 +17,14 @@ To ensure a consistent environment across different machines, the project is ful
 ### 📦 Option 1: Full Docker Launch (Recommended)
 This is the fastest way to run the entire stack (Application + PostgreSQL) without manually installing Java or Maven.
 
-1. **Prepare the environment file:**
+1. **Prepare the environment file (Optional):**
+
+    If you want to override default ports or credentials, create a `.env` file:
    ```bash
    cp .env.example .env
    ```
 
-*(Note: .env.example contains pre-configured defaults for an immediate "out-of-the-box" experience.)*
+    *(Note: .env.example contains pre-configured defaults for an immediate "out-of-the-box" experience.)*
 
 2. **Launch the services:**
    ```bash
